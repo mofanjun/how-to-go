@@ -9,10 +9,14 @@ import (
 	"bufio"
 	"golang.org/x/net/html/charset"
 	"golang.org/x/text/encoding/unicode"
+	"time"
 )
+
+var rateLimit = time.Tick(100 * time.Millisecond)
 
 //
 func Fetch(url string) ([]byte , error) {
+	<- rateLimit
 	resp, err := agentGet(url)
 
 	if err != nil {

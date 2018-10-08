@@ -2,7 +2,7 @@ package parser
 
 import (
 	"regexp"
-	"crawler/singleCrawler/engine"
+	"crawler/scheduler/engine"
 )
 
 const cityListRe = `<a href="(http://www.zhenai.com/zhenghun/[0-9a-z]+)"[^>]*>([^<]+)</a>`
@@ -12,7 +12,6 @@ func ParseCityList (contents []byte) engine.ParseResult{
 	matches := re.FindAllSubmatch(contents, -1)
 
 	result := engine.ParseResult{}
-	limit := 2
 	for _, m := range matches {
 		result.Items = append(result.Items, "City " + string(m[2]))
 		result.Requests = append(result.Requests,engine.Request{
@@ -20,10 +19,6 @@ func ParseCityList (contents []byte) engine.ParseResult{
 			ParseFunc:ParseCity,
 		})
 
-		limit--
-		if limit == 0 {
-			break
-		}
 	}
 
 	return result

@@ -1,9 +1,9 @@
 package parser
 
 import (
-	"crawler/singleCrawler/engine"
+	"crawler/scheduler/engine"
 	"regexp"
-	"crawler/singleCrawler/model"
+	"crawler/scheduler/model"
 	"strconv"
 )
 

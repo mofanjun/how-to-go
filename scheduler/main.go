@@ -1,14 +1,20 @@
 package main
 
 import (
-"crawler/singleCrawler/engine"
-"crawler/singleCrawler/zhenai/parser"
-	engine2 "crawler/scheduler/engine"
+	"crawler/scheduler/engine"
+	"crawler/scheduler/scheduler"
+	"crawler/scheduler/zhenai/parser"
 )
 
 func main() {
-	engine2.SimpleEngine.Run(engine.Request{
-		Url: "http://www.zhenai.com/zhenghun",
+	e := engine.ConcurrentEngine{
+		Scheduler: &scheduler.SimpleScheduler{},
+		WorkerCount:10,
+	}
+
+
+	e.Run(engine.Request{
+		Url:"http://www.zhenai.com/zhenghun",
 		ParseFunc: parser.ParseCityList,
 	})
 }

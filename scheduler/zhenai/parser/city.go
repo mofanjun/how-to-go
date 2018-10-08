@@ -2,7 +2,7 @@ package parser
 
 import (
 	"regexp"
-	"crawler/singleCrawler/engine"
+	"crawler/scheduler/engine"
 )
 
 const cityRe = `<a href="(http://album.zhenai.com/u/[0-9]+)"[^>]*>([^<]+)</a>`
