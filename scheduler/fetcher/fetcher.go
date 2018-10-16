@@ -12,11 +12,12 @@ import (
 	"time"
 )
 
-var rateLimit = time.Tick(100 * time.Millisecond)
+//rateLimiter 在包下面是全局的 所有的fetcher共享
+var rateLimiter = time.Tick(20 * time.Millisecond)
 
 //
 func Fetch(url string) ([]byte , error) {
-	<- rateLimit
+	<- rateLimiter
 	resp, err := agentGet(url)
 
 	if err != nil {
