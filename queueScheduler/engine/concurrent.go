@@ -1,6 +1,8 @@
 package engine
 
-import "log"
+import (
+	"log"
+)
 
 type ConcurrentEngine struct {
 	Scheduler Scheduler
@@ -9,17 +11,18 @@ type ConcurrentEngine struct {
 
 type Scheduler interface {
 	Submit(Request)
+	WorkerReady(chan Request)
+	Run()
 	ConfigMasterWorkerChan(chan Request)
 }
 
 func (e *ConcurrentEngine) Run(seeds ...Request) {
 
-	in := make(chan Request)
 	out := make(chan ParseResult)
-	e.Scheduler.ConfigMasterWorkerChan(in)
+	e.Scheduler.Run()
 
 	for i := 0; i < e.WorkerCount; i++ {
-		creteWorker(in,out)
+		creteWorker(out,e.Scheduler)
 	}
 
 	for _,r := range seeds {
@@ -42,9 +45,12 @@ func (e *ConcurrentEngine) Run(seeds ...Request) {
 	}
 }
 
-func creteWorker(in chan Request,out chan ParseResult)  {
+func creteWorker(out chan ParseResult,s Scheduler)  {
 	go func() {
+		in := make(chan Request)
 		for  {
+			//告诉调度器空闲了
+			s.WorkerReady(in)
 			request := <- in
 			result, err := worker(request)
 			if err != nil {
