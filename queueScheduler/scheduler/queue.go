@@ -6,7 +6,7 @@ import (
 
 type QueuedScheduler struct {
 	requestChan chan engine.Request
-	workerChan chan chan engine.Request
+	workerChan chan chan engine.Request//chan of Worker
 }
 
 func (s *QueuedScheduler) Submit(r engine.Request) {
