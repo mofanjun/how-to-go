@@ -12,26 +12,26 @@ func TestParseProfile(t *testing.T) {
 		panic(err)
 	}
 
-	result := ParseProfile(contents,"小顺儿")
+	result := ParseProfile(contents,"灰兔儿")
 
 	if len(result.Items) != 1 {
 		t.Errorf("result Item length must 1,but get %v",result)
 	}
 
 	exceped := model.Profile{
-		Name:"小顺儿",
+		Name:"灰兔儿",
 		Gender:"女",
-		Age:29,
-		Height:169,
+		Age:39,
+		Height:161,
 		Weight:52,
-		Income:"3001-5000元",
-		Marriage:"未婚",
-		Education:"大学本科",
-		Occupation:"会计",
-		Hokou:"四川阿坝",
-		Xinzuo:"魔羯座",
-		House:"和家人同住",
-		Car:"未购车",
+		Income:"2-5万",
+		Marriage:"离异",
+		Education:"中专",
+		Occupation:"未知",
+		Hokou:"浙江杭州",
+		Xinzuo:"天秤座",
+		House:"已购房",
+		Car:"已购车",
 	}
 
 	profile := result.Items[0].(model.Profile)
