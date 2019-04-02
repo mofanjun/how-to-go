@@ -1,7 +1,10 @@
 package engine
 
 import "log"
-import "crawler/finalCrawler/fetcher"
+import (
+	"crawler/finalCrawler/fetcher"
+	"crawler/finalCrawler/model"
+)
 
 type ConcurrentEngine struct {
 	Scheduler Scheduler
@@ -29,20 +32,30 @@ func (e *ConcurrentEngine) Run(seeds ...Request) {
 	}
 
 	for _,r := range seeds {
+		if isDuplicate(r.Url) {
+			continue
+		}
 		e.Scheduler.Submit(r)
 	}
 
-	itemCount := 0
+	profileCount := 0
 	for {
 		result := <- out
 		//deal item
 		for _,item := range result.Items {
-			log.Printf("Got item #%d: %v",itemCount,item)
-			itemCount++
+			//type assertion
+			if profile, ok := item.(model.Profile); ok {
+				log.Printf("Got item #%d: %v",profileCount,profile)
+				profileCount++
+			}
+
 		}
 
 		//deal request
 		for _,request := range result.Requests {
+			if isDuplicate(request.Url) {
+				continue
+			}
 			e.Scheduler.Submit(request)
 		}
 	}
@@ -65,7 +78,7 @@ func creteWorker(in chan Request,
 }
 
 func worker(r Request) (ParseResult, error){
-	log.Printf("Fetching %s", r.Url)
+	//log.Printf("Fetching %s", r.Url)
 	body, err := fetcher.Fetch(r.Url)
 	if err != nil {
 		log.Printf("Fetch error fetching url %s %v",r.Url,err)
@@ -73,4 +86,15 @@ func worker(r Request) (ParseResult, error){
 	}
 
 	return r.ParseFunc(body), nil
+}
+
+var visitedUrl = make(map[string]bool)
+
+func isDuplicate(url string) bool {
+	if visitedUrl[url] {
+		return true
+	}
+
+	visitedUrl[url] = true
+	return false
 }
