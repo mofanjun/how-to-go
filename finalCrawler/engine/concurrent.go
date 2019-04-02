@@ -9,10 +9,14 @@ type ConcurrentEngine struct {
 }
 
 type Scheduler interface {
+	ReadyNotifier
 	Submit(Request)
-	WorkerReady(chan Request)
+	WorkChan() chan Request
 	Run()
-	ConfigMasterWorkerChan(chan Request)
+}
+
+type ReadyNotifier interface {
+	WorkerReady(chan Request)
 }
 
 func (e *ConcurrentEngine) Run(seeds ...Request) {
@@ -21,7 +25,7 @@ func (e *ConcurrentEngine) Run(seeds ...Request) {
 	e.Scheduler.Run()
 
 	for i := 0; i < e.WorkerCount; i++ {
-		creteWorker(out,e.Scheduler)
+		creteWorker(e.Scheduler.WorkChan(),out,e.Scheduler)
 	}
 
 	for _,r := range seeds {
@@ -44,12 +48,12 @@ func (e *ConcurrentEngine) Run(seeds ...Request) {
 	}
 }
 
-func creteWorker(out chan ParseResult,s Scheduler)  {
+func creteWorker(in chan Request,
+	out chan ParseResult,r ReadyNotifier)  {
 	go func() {
-		in := make(chan Request)
 		for  {
 			//告诉调度器空闲了
-			s.WorkerReady(in)
+			r.WorkerReady(in)
 			request := <- in
 			result, err := worker(request)
 			if err != nil {
