@@ -2,8 +2,8 @@ package parser
 
 import (
 	"regexp"
-	"crawler/queueScheduler/engine"
-)
+	"crawler/finalCrawler/engine"
+	)
 
 const cityRe = `<a href="(http://album.zhenai.com/u/[0-9]+)"[^>]*>([^<]+)</a>`
 

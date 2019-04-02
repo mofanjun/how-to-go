@@ -6,70 +6,12 @@ import (
 	"crawler/scheduler/model"
 	"strings"
 	"strconv"
-	"fmt"
 )
 
-//var ageRe = regexp.MustCompile(`<td><span class="label">年龄：</span>([\d]+)岁</td>`)
-//var genderRe = regexp.MustCompile(`<td><span class="label">性别：</span><span field="">([^<]+)</span></td>`)
-//var heightRe = regexp.MustCompile(`<td><span class="label">身高：</span>([\d]+)CM</td>`)
-//var weightRe = regexp.MustCompile(`<td><span class="label">体重：</span><span field="">([\d]+)KG</span></td>`)
-//var incomeRe = regexp.MustCompile(`<td><span class="label">月收入：</span>([^<]+)</td>`)
-//var marriageRe = regexp.MustCompile(`<td><span class="label">婚况：</span>([^<]+)</td>`)
-//var educationRe = regexp.MustCompile(`<td><span class="label">学历：</span>([^<]+)</td>`)
-//var occupationRe = regexp.MustCompile(`<td><span class="label">职业： </span>([^<]+)</td>`)
-//var hokouRe = regexp.MustCompile(`<td><span class="label">籍贯：</span>([^<]+)</td>`)
-//var xinzuoRe = regexp.MustCompile(`<td><span class="label">星座：</span>([^<]+)</td>`)
-//var houseRe = regexp.MustCompile(`<td><span class="label">住房条件：</span><span field="">([^<]+)</span></td>`)
-//var carRe = regexp.MustCompile(`<td><span class="label">是否购车：</span><span field="">([^<]+)</span></td>`)
-
 var basicRe = regexp.MustCompile(`<div class="des f-cl"[^>]*>([^<]+)</div>`)
-
-
-//func ParseProfile(contents []byte, name string) engine.ParseResult {
-//	profile := model.Profile{}
-//	//name
-//	profile.Name = name
-//	//age
-//	age,err := strconv.Atoi(string(extractString(contents,ageRe)))
-//	if err == nil {
-//		profile.Age = age
-//	}
-//	//height
-//	height,err := strconv.Atoi(string(extractString(contents,heightRe)))
-//	if err == nil {
-//		profile.Height = height
-//	}
-//	//weight
-//	weight,err := strconv.Atoi(string(extractString(contents,weightRe)))
-//	if err == nil {
-//		profile.Weight = weight
-//	}
-//	//gender
-//	profile.Gender = extractString(contents,genderRe)
-//	//income
-//	profile.Income = extractString(contents,incomeRe)
-//	//marriage
-//	profile.Marriage = extractString(contents,marriageRe)
-//	//education
-//	profile.Education = extractString(contents,educationRe)
-//	//occupation
-//	profile.Occupation = extractString(contents,occupationRe)
-//	//hoKou
-//	profile.Hokou = extractString(contents,hokouRe)
-//	//xinzuo
-//	profile.Xinzuo = extractString(contents,xinzuoRe)
-//	//house
-//	profile.House = extractString(contents,houseRe)
-//	//car
-//	profile.Car = extractString(contents,carRe)
-//
-//	result := engine.ParseResult{
-//		Items: [] interface{}{profile},
-//	}
-//
-//	return result
-//}
-
+var weightRe = regexp.MustCompile(`<div class="m-btn purple"[^>]*>([^<]+)kg</div>`)
+var hokouRe = regexp.MustCompile(`<div class="m-btn pink"[^>]*>籍贯:([^<]+)</div>`)
+var xinZuoRe = regexp.MustCompile(`<div class="m-btn purple"[^>]*>([^/(]+)[\S]+-[\S]+</div>`)
 func ParseProfile(contents []byte, name string) engine.ParseResult {
 	profile := model.Profile{}
 
@@ -97,9 +39,20 @@ func ParseProfile(contents []byte, name string) engine.ParseResult {
 	//income
 	profile.Income = splitStr[5]
 	//gender
+	if strings.Contains(string(contents),"女士征婚") {
+		profile.Gender = "女"
+	} else {
+		profile.Gender = "男"
+	}
 	//weight
+	weight,err := strconv.Atoi(string(extractString(contents,weightRe)))
+	if err == nil {
+		profile.Weight = weight
+	}
 	//hokou
+	profile.Hokou = extractString(contents,hokouRe)
 	//xinzuo
+	profile.Xinzuo = extractString(contents,xinZuoRe)
 	//TODO：Occupation后面补上
 	profile.Occupation = "未知"
 	//house
@@ -109,14 +62,12 @@ func ParseProfile(contents []byte, name string) engine.ParseResult {
 		profile.House = "未购房"
 	}
 	//car
-	if strings.Contains(string(contents),"已购车") {
-		profile.House = "已购车"
+	if strings.Contains(string(contents),"已买车") {
+		profile.Car = "已买车"
 	} else {
-		profile.House = "未购车"
+		profile.Car = "未买车"
 	}
 	//
-	fmt.Println("Now profile >",profile)
-
 	result := engine.ParseResult{
 		Items: [] interface{}{profile},
 	}

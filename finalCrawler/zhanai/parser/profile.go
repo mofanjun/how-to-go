@@ -1,11 +1,11 @@
 package parser
 
 import (
-	"crawler/queueScheduler/engine"
 	"regexp"
-	"crawler/queueScheduler/model"
-	"strconv"
+	"crawler/finalCrawler/engine"
+	"crawler/finalCrawler/model"
 	"strings"
+	"strconv"
 )
 
 var basicRe = regexp.MustCompile(`<div class="des f-cl"[^>]*>([^<]+)</div>`)

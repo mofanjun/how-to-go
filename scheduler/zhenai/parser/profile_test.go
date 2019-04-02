@@ -3,7 +3,7 @@ package parser
 import (
 	"testing"
 	"io/ioutil"
-	"crawler/singleCrawler/model"
+	"crawler/scheduler/model"
 )
 
 func TestParseProfile(t *testing.T) {
@@ -24,14 +24,14 @@ func TestParseProfile(t *testing.T) {
 		Age:39,
 		Height:161,
 		Weight:52,
-		Income:"2-5万",
+		Income:"20001-50000元",
 		Marriage:"离异",
 		Education:"中专",
 		Occupation:"未知",
 		Hokou:"浙江杭州",
 		Xinzuo:"天秤座",
 		House:"已购房",
-		Car:"已购车",
+		Car:"已买车",
 	}
 
 	profile := result.Items[0].(model.Profile)
