@@ -12,9 +12,10 @@ var basicRe = regexp.MustCompile(`<div class="des f-cl"[^>]*>([^<]+)</div>`)
 var weightRe = regexp.MustCompile(`<div class="m-btn purple"[^>]*>([^<]+)kg</div>`)
 var hokouRe = regexp.MustCompile(`<div class="m-btn pink"[^>]*>籍贯:([^<]+)</div>`)
 var xinZuoRe = regexp.MustCompile(`<div class="m-btn purple"[^>]*>([^/(]+)[\S]+-[\S]+</div>`)
+var idUrlRe = regexp.MustCompile(`http://album.zhenai.com/u/([\d]+)`)
 
 
-func ParseProfile(contents []byte, name string,url string) engine.ParseResult {
+func ParseProfile(contents []byte, url string, name string) engine.ParseResult {
 	profile := model.Profile{}
 
 	//
@@ -25,7 +26,14 @@ func ParseProfile(contents []byte, name string,url string) engine.ParseResult {
 	splitStr := strings.Split(str,"|")//[杭州 39岁 中专 离异 161cm 20001-50000元]
 	if splitStr == nil || len(splitStr) < 2 {
 		result := engine.ParseResult{
-			Items: [] interface{}{profile},
+			Items: [] engine.Item{
+				{
+					Url:url,
+					Type:"zhenai",
+					Id: extractString([]byte(url),idUrlRe),
+					PayLoad:profile,
+				},
+			},
 		}
 		return  result
 	}
@@ -82,7 +90,15 @@ func ParseProfile(contents []byte, name string,url string) engine.ParseResult {
 	}
 	//
 	result := engine.ParseResult{
-		Items: [] interface{}{profile},
+		//Items: [] interface{}{profile},
+		Items: [] engine.Item{
+			{
+				Url:url,
+				Type:"zhenai",
+				Id: extractString([]byte(url),idUrlRe),
+				PayLoad:profile,
+			},
+		},
 	}
 	//TODO:完成猜你喜欢的url
 	return result
@@ -95,5 +111,11 @@ func extractString(contents []byte, re *regexp.Regexp) string {
 		return string(match[1])
 	} else {
 		return ""
+	}
+}
+
+func ProfilePaser(name string) engine.ParseFunc{
+	return func(bytes []byte, url string) engine.ParseResult {
+		return ParseProfile(bytes, url, name)
 	}
 }

@@ -57,7 +57,7 @@ func agentGet (url string) (*http.Response, error){
 	}
 	//add user agent
 	request.Header.Add("User-Agent",
-		"Mozilla/5.0 (Macintosh; Intel Mac OS X 10_13_3) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/69.0.3497.100 Safari/537.36")
+		"Mozilla/5.0 (Macintosh; Intel Mac OS X 10_13_3) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/74.0.3729.157 Safari/537.36")
 	resp,err := client.Do(request)
 
 	return resp,nil

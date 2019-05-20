@@ -8,10 +8,16 @@ import (
 )
 
 func main() {
+	itemChan, err := persist.ItemSaver("dating_profile")
+
+	if err != nil {
+		panic(err)
+	}
+
 	e := engine.ConcurrentEngine{
 		Scheduler: &scheduler.QueuedScheduler{},
 		WorkerCount:10,
-		ItemSaver:persist.ItemSaver(),
+		ItemSaver:itemChan,
 	}
 
 
