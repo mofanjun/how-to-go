@@ -3,12 +3,12 @@ package engine
 import "log"
 import (
 	"crawler/finalCrawler/fetcher"
-	"crawler/finalCrawler/model"
 )
 
 type ConcurrentEngine struct {
 	Scheduler Scheduler
 	WorkerCount int
+	ItemSaver chan interface{}
 }
 
 type Scheduler interface {
@@ -38,17 +38,11 @@ func (e *ConcurrentEngine) Run(seeds ...Request) {
 		e.Scheduler.Submit(r)
 	}
 
-	profileCount := 0
 	for {
 		result := <- out
 		//deal item
 		for _,item := range result.Items {
-			//type assertion
-			if profile, ok := item.(model.Profile); ok {
-				log.Printf("Got item #%d: %v",profileCount,profile)
-				profileCount++
-			}
-
+			go func() {e.ItemSaver <- item}()
 		}
 
 		//deal request
